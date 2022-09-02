@@ -1,18 +1,23 @@
+import { Image } from "konva/lib/shapes/Image";
+import { Stage } from "konva/lib/Stage";
+
 export default class App {
-    public canvas : HTMLCanvasElement;
+    public stage : Stage;
+
+    private textures : {[name: string]: Image} = {};
 
     public constructor() {
-        requestAnimationFrame(this.update.bind(this))
-        this.canvas = document.getElementById("Main") as HTMLCanvasElement;
+        this.stage = new Stage({container: "Main", width: window.innerWidth, height: window.innerHeight});
+        this.loadImages();
+
+        
     }
 
     public update() {
-        this.canvas.width = document.body.clientWidth;
-        this.canvas.height = document.body.clientHeight;
-        requestAnimationFrame(this.update.bind(this))
+        
     }
 
-    private loadImages() {
-        
+    private loadImages() : void {
+        this.textures["earth"] = new Image({image: document.getElementById("earth") as CanvasImageSource});
     }
 }
