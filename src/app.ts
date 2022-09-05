@@ -6,6 +6,9 @@ import $ from "jquery";
 
 import { Circle } from "konva/lib/shapes/Circle";
 
+import plates from "../res/plates.json";
+import { Line } from "konva/lib/shapes/Line";
+
 export default class App {
     public stage : Stage;
     public layer : Layer;
@@ -32,6 +35,16 @@ export default class App {
         this.stage.clear();
 
         this.layer.add(this.textures["earth"]);
+
+        plates.features.forEach(i => {
+            let points : number[] = [];
+            i.geometry.coordinates.forEach(i => {
+                let p = this.latLongToXY(i[0], i[1]);
+                points.push(p[0]);
+                points.push(p[1]);
+            });
+            this.layer.add(new Line({points:points, stroke:"red"}));
+        });
         
         this.layer.draw();
     }
