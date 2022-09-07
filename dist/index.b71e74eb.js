@@ -574,7 +574,8 @@ class App {
         (0, _platesJsonDefault.default).features.forEach((i)=>{
             let points = [];
             i.geometry.coordinates.forEach((i)=>{
-                let p = this.latLongToXY(i[0], i[1]);
+                let p = this.latLongToXY(i[1], i[0]);
+                if (isNaN(p[0]) || isNaN(p[1])) throw new RangeError("Uh oh");
                 points.push(p[0]);
                 points.push(p[1]);
             });
@@ -620,7 +621,7 @@ class App {
 }
 exports.default = App;
 
-},{"konva/lib/Layer":"1Tbuc","konva/lib/shapes/Image":"8V6x8","konva/lib/Stage":"38rm3","jquery":"hgMhh","../res/plates.json":"adjI2","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","konva/lib/shapes/Line":"lpEAb"}],"1Tbuc":[function(require,module,exports) {
+},{"konva/lib/Layer":"1Tbuc","konva/lib/shapes/Image":"8V6x8","konva/lib/Stage":"38rm3","jquery":"hgMhh","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","../res/plates.json":"adjI2","konva/lib/shapes/Line":"lpEAb"}],"1Tbuc":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Layer", ()=>Layer);

@@ -39,7 +39,10 @@ export default class App {
         plates.features.forEach(i => {
             let points : number[] = [];
             i.geometry.coordinates.forEach(i => {
-                let p = this.latLongToXY(i[0], i[1]);
+                let p = this.latLongToXY(i[1], i[0]);
+                if (isNaN(p[0]) || isNaN(p[1])) {
+                    throw new RangeError("Uh oh");
+                }
                 points.push(p[0]);
                 points.push(p[1]);
             });
