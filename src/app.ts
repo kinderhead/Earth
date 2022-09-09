@@ -17,6 +17,9 @@ export default class App {
 
     private earthSize : [number, number] = [0, 0];
 
+    private showPlates : boolean = false;
+    private tectonics : number[][] = [];
+
     public constructor() {
         console.log("Initializing");
 
@@ -25,7 +28,24 @@ export default class App {
         this.stage.add(this.layer);
 
         this.loadImages().then(() => {
-            addEventListener("resize", (event) => this.update())
+            addEventListener("resize", (event) => this.update());
+            document.getElementById("Plates").addEventListener("click", () => {
+                this.showPlates = !this.showPlates;
+                this.update();
+            });
+
+            plates.features.forEach(i => {
+                let points : number[] = [];
+                i.geometry.coordinates.forEach(i => {
+                    let p = this.latLongToXY(i[1], i[0]);
+                    if (isNaN(p[0]) || isNaN(p[1])) {
+                        throw new RangeError("Uh oh");
+                    }
+                    points.push(p[0]);
+                    points.push(p[1]);
+                });
+                this.tectonics.push(points);
+            });
 
             this.update();
         });
@@ -33,21 +53,15 @@ export default class App {
 
     public update() {
         this.stage.clear();
+        this.layer.clear();
 
         this.layer.add(this.textures["earth"]);
 
-        plates.features.forEach(i => {
-            let points : number[] = [];
-            i.geometry.coordinates.forEach(i => {
-                let p = this.latLongToXY(i[1], i[0]);
-                if (isNaN(p[0]) || isNaN(p[1])) {
-                    throw new RangeError("Uh oh");
-                }
-                points.push(p[0]);
-                points.push(p[1]);
+        if (this.showPlates) {
+            this.tectonics.forEach(i => {
+                this.layer.add(new Line({points:i, stroke:"red"}));
             });
-            this.layer.add(new Line({points:points, stroke:"red"}));
-        });
+        }
         
         this.layer.draw();
     }
