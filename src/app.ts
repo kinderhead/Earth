@@ -1,13 +1,13 @@
 import { Layer } from "konva/lib/Layer";
 import { Image } from "konva/lib/shapes/Image";
 import { Stage } from "konva/lib/Stage";
+import { Line } from "konva/lib/shapes/Line";
 
 import $ from "jquery";
 
-import { Circle } from "konva/lib/shapes/Circle";
-
 import plates from "../res/plates.json";
-import { Line } from "konva/lib/shapes/Line";
+import orogens from "../res/orogens.json";
+import Orogen from "./orogen";
 
 export default class App {
     public stage : Stage;
@@ -20,6 +20,9 @@ export default class App {
     private showPlates : boolean = false;
     private tectonics : number[][] = [];
 
+    private showOrogens : boolean = false;
+    private orogens : Orogen[] = [];
+
     public constructor() {
         console.log("Initializing");
 
@@ -31,6 +34,11 @@ export default class App {
             addEventListener("resize", (event) => this.update());
             document.getElementById("Plates").addEventListener("click", () => {
                 this.showPlates = !this.showPlates;
+                this.update();
+            });
+
+            document.getElementById("Orogens").addEventListener("click", () => {
+                this.showOrogens = !this.showOrogens;
                 this.update();
             });
 
@@ -47,12 +55,44 @@ export default class App {
                 this.tectonics.push(points);
             });
 
+            orogens.features.forEach(e => {
+                e.geometry.coordinates.forEach(j => {
+                    if (e.geometry.type == "Polygon") {
+                        let points : number[] = [];
+                        j.forEach(i => {
+                            let p = this.latLongToXY(i[1], i[0]);
+                            if (isNaN(p[0]) || isNaN(p[1])) {
+                                throw new RangeError("Uh oh");
+                            }
+                            points.push(p[0]);
+                            points.push(p[1]);
+                        });
+                        this.orogens.push(new Orogen(points));
+                    }
+                    else {
+                        j.forEach(k => {
+                            let points : number[] = [];
+                            k.forEach(i => {
+                                let p = this.latLongToXY(i[1], i[0]);
+                                if (isNaN(p[0]) || isNaN(p[1])) {
+                                    throw new RangeError("Uh oh");
+                                }
+                                points.push(p[0]);
+                                points.push(p[1]);
+                            });
+                            this.orogens.push(new Orogen(points));
+                        });
+                    }
+                });
+            });
+
             this.update();
         });
     }
 
     public update() {
         this.stage.clear();
+        this.layer.children.forEach((i) => {i.remove()});
         this.layer.clear();
 
         this.layer.add(this.textures["earth"]);
@@ -60,6 +100,12 @@ export default class App {
         if (this.showPlates) {
             this.tectonics.forEach(i => {
                 this.layer.add(new Line({points:i, stroke:"red"}));
+            });
+        }
+
+        if (this.showOrogens) {
+            this.orogens.forEach(i => {
+                this.layer.add(new Line({points:i.points, stroke:"lightblue", closed:true, fill:"lightblue", opacity:.5}));
             });
         }
         
