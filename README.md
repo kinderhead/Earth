@@ -1,12 +1,13 @@
 # Physical Geology Project 1
 
-An interactive map of the Earth with a few toggleable features.
+A scuffed interactive map of the Earth with a few toggleable features. It covers topics 5 and 6.
 ![Earth](https://github.com/kinderhead/Earth/blob/master/res/earth.jpg?raw=true)
 
 ## Features
 
 * Show tectonic plate boundaries.
 * Show mountains that are created from converging plates.
+* Show hotspot locations (extra data crashes my computer.)
 
 ## Annotated Bibliography
 

@@ -7,7 +7,10 @@ import $ from "jquery";
 
 import plates from "../res/plates.json";
 import orogens from "../res/orogens.json";
+import hotspots from "../res/hotspots.json";
+
 import Orogen from "./orogen";
+import { Circle } from "konva/lib/shapes/Circle";
 
 export default class App {
     public stage : Stage;
@@ -18,10 +21,13 @@ export default class App {
     private earthSize : [number, number] = [0, 0];
 
     private showPlates : boolean = false;
+    private tectonicColors : string[] = [];
     private tectonics : number[][] = [];
 
     private showOrogens : boolean = false;
     private orogens : Orogen[] = [];
+
+    private showHotspots : boolean = false;
 
     public constructor() {
         console.log("Initializing");
@@ -42,6 +48,11 @@ export default class App {
                 this.update();
             });
 
+            document.getElementById("Hotspots").addEventListener("click", () => {
+                this.showHotspots = !this.showHotspots;
+                this.update();
+            });
+
             plates.features.forEach(i => {
                 let points : number[] = [];
                 i.geometry.coordinates.forEach(i => {
@@ -53,6 +64,11 @@ export default class App {
                     points.push(p[1]);
                 });
                 this.tectonics.push(points);
+                if (i.properties.Type == "subduction") {
+                    this.tectonicColors.push("green");
+                } else {
+                    this.tectonicColors.push("red");
+                }
             });
 
             orogens.features.forEach(e => {
@@ -98,14 +114,21 @@ export default class App {
         this.layer.add(this.textures["earth"]);
 
         if (this.showPlates) {
-            this.tectonics.forEach(i => {
-                this.layer.add(new Line({points:i, stroke:"red"}));
+            this.tectonics.forEach((i, idex) => {
+                this.layer.add(new Line({points:i, stroke:this.tectonicColors[idex]}));
             });
         }
 
         if (this.showOrogens) {
             this.orogens.forEach(i => {
                 this.layer.add(new Line({points:i.points, stroke:"lightblue", closed:true, fill:"lightblue", opacity:.5}));
+            });
+        }
+
+        if (this.showHotspots) {
+            hotspots.forEach(i => {
+                let p = this.latLongToXY(i[0], i[1]);
+                this.layer.add(new Circle({x:p[0], y:p[1], radius:4, fill:"orange"}))
             });
         }
         
